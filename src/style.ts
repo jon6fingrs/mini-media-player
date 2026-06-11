@@ -323,7 +323,7 @@ const style = css`
     -webkit-text-size-adjust: 100%;
   }
   .entity__info__media[short] {
-    max-height: calc(var(--mmp-unit) / 2);
+    max-height: var(--mmp-media-info-short-max-height, calc(var(--mmp-unit) / 2));
     overflow: hidden;
   }
   .attr__app_name {
