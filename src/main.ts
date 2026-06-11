@@ -36,7 +36,7 @@ import { UPDATE_PROPS, BREAKPOINT } from './const';
 import { HomeAssistant, MediaPlayerEntity } from './types';
 import { MiniMediaPlayerBaseConfiguration, MiniMediaPlayerConfiguration } from './config/types';
 
-@customElement('mini-media-player')
+@customElement('mini-media-player-jk')
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 class MiniMediaPlayer extends LitElement {
   @property({ attribute: false })
@@ -315,27 +315,46 @@ class MiniMediaPlayer extends LitElement {
 
     return html` <div class="entity__info__name">${this.name} ${this.speakerCount()}</div>`;
   }
-
   renderMediaInfo(): TemplateResult | undefined {
     if (this.config.hide.info) return;
+  
     const items = this.player.mediaInfo;
-
-    return html` <div
-      class="entity__info__media"
-      ?short=${this.config.info === 'short' || !this.player.isActive}
-      ?short-scroll=${this.config.info === 'scroll'}
-      ?scroll=${this.overflow}
-      style="animation-duration: ${this.overflow}s;"
-    >
-      ${this.config.info === 'scroll'
-        ? html` <div>
-            <div class="marquee">
-              ${items.map((i) => html`<span class=${`attr__${i.attr}`}>${i.prefix + i.text}</span>`)}
-            </div>
-          </div>`
-        : ''}
-      ${items.map((i) => html`<span class=${`attr__${i.attr}`}>${i.prefix + i.text}</span>`)}
-    </div>`;
+    const mediaInfoLines = this.config.media_info_lines || 0;
+    const mediaInfoLineHeight = '1.2em';
+  
+    const mediaInfoStyle = mediaInfoLines > 0
+      ? {
+          '--mmp-media-info-lines': String(mediaInfoLines),
+          '--mmp-media-info-line-height': mediaInfoLineHeight,
+          '--mmp-media-info-short-max-height':
+            'calc(var(--mmp-media-info-line-height) * var(--mmp-media-info-lines))',
+          lineHeight: 'var(--mmp-media-info-line-height)',
+          minHeight: 'calc(var(--mmp-media-info-line-height) * var(--mmp-media-info-lines))',
+          maxHeight: 'calc(var(--mmp-media-info-line-height) * var(--mmp-media-info-lines))',
+          overflow: 'hidden',
+        }
+      : {};
+  
+    return html`
+      <div
+        class="entity__info__media"
+        style=${styleMap(mediaInfoStyle)}
+        ?short=${this.config.info === 'short' || !this.player.isActive}
+        ?scroll=${this.config.info === 'scroll'}
+      >
+        ${this.config.info === 'scroll' ? html`
+          <div
+            class="marquee"
+            style=${styleMap({
+              animationDuration: this.overflow ? `${this.overflow}s` : '',
+            })}
+          >
+            ${items.map((i) => html`<span>${i.prefix + i.text}</span>`)}
+          </div>
+        ` : ''}
+        ${items.map((i) => html`<span>${i.prefix + i.text}</span>`)}
+      </div>
+    `;
   }
 
   speakerCount(): string | undefined {
@@ -464,8 +483,8 @@ class MiniMediaPlayer extends LitElement {
 (window as any).customCards = (window as any).customCards || [];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).customCards.push({
-  type: 'mini-media-player',
-  name: 'Mini Media Player',
+  type: 'mini-media-player-jk',
+  name: 'Mini Media Player JK',
   preview: false,
-  description: 'A minimalistic yet customizable media player card',
+  description: 'A minimalistic yet customizable media player card with media info line limiting',
 });
