@@ -22,6 +22,7 @@ export const generateConfig = (config: MiniMediaPlayerBaseConfiguration): MiniMe
     artwork: 'default',
     adaptive_color: false,
     info: 'default',
+    media_info_lines: 0,
     group: false,
     volume_stateless: false,
     more_info: true,
@@ -50,6 +51,8 @@ export const generateConfig = (config: MiniMediaPlayerBaseConfiguration): MiniMe
     min_volume: Number(config.min_volume) || 0,
   };
 
+  conf.media_info_lines = Math.max(0, Math.floor(Number(conf.media_info_lines) || 0));
+  
   conf.collapse = conf.hide.controls || conf.hide.volume;
   conf.info = conf.collapse && conf.info !== 'scroll' ? 'short' : conf.info;
   conf.flow = conf.hide.icon && conf.hide.name && conf.hide.info;
